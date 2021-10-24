@@ -97,7 +97,7 @@ app.post('/api/food', (req, res) => {
 
     if (validFood(food)) {
         food.id = uuid.v4()
-        food.push(drink)
+        foods.push(food)
         res.status(201).json(food);
         return
     }
