@@ -28,7 +28,7 @@ app.post('/api/drink', (req, res) => {
     if (valid(drink)) {
         drink.id = uuid.v4()
         drinks.push(drink)
-        res.status(200).json(drink);
+        res.status(201).json(drink);
         return
     }
 
@@ -54,7 +54,7 @@ app.put('/api/drink/:id', (req, res) => {
     for(i=0; i<drinks.length; i++) {
         if (drinks[i].id === id) {
             drinks[i] = drink
-            res.status(204).end()
+            res.status(200).json(drink)
             return
         }
     }
