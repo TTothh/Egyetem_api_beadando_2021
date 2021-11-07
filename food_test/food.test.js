@@ -99,6 +99,86 @@ describe('Food tests', () => {
 
         expect(modification.code).toBe(200)
         expect(modified.code).toBe(200)
+
+        await client.delete(path)
+    })
+
+    it("7. put returns 404 on wrong id", async () => {
+        //create an item
+        const endpoint = "/api/food"
+        const origFood = {"name": "hamburgerToBeModified", "calories": 1200}
+        const modifiedFood = {"name": "hamburgerIsModified", "calories": 69}
+
+        const created = await client.post(endpoint, origFood)
+
+        const item = JSON.parse(created.body)
+        const path =
+        const wrongid = "asd"
+        const wrongpath = endpoint + "/" + wrongid
+
+        const modification = await client.put(wrongpath, modifiedFood)
+        const modified = await client.get(wrongpath)
+
+        expect(modification.code).toBe(404)
+
+        await client.delete(path)
+    })
+
+    it("8. delete actually deletes item", async () => {
+        //create an item
+        const endpoint = "/api/food"
+        const food = {"name": "hamburgerToBeDeleted", "calories": 1200}
+
+        const created = await client.post(endpoint, food)
+
+        const item = JSON.parse(created.body)
+        const path = endpoint + "/" + item.id
+
+        const deletion = await client.delete(path)
+
+        expect(deletion.code).toBe(204)
+
+        await client.delete(path)
+    })
+
+    it("9. delete returns 404 on wrong id", async () => {
+        //create an item
+        const endpoint = "/api/food"
+        const food = {"name": "hamburgerToBeDeleted", "calories": 1200}
+
+        const created = await client.post(endpoint, food)
+
+        const item = JSON.parse(created.body)
+        const path = endpoint + "/" + item.id
+
+        const wrongid = 'asdd'
+        const wrongpath = endpoint + "/" + wrongid
+
+        const deletion = await client.delete(wrongpath)
+
+        expect(deletion.code).toBe(404)
+
+        await client.delete(path)
+    })
+
+    it("10. put returns 400 on Id mismatch", async () => {
+        //create an item
+        const endpoint = "/api/food"
+        const origFood = {"name": "hamburgerToBeModified", "calories": 1200}
+
+        const created = await client.post(endpoint, origFood)
+
+        const item = JSON.parse(created.body)
+        const wrongid = "asd"
+        const path = endpoint + "/" + wrongid
+
+        const modifiedFood = {"name": "hamburgerIsModified", "calories": 69, "id" : item.id}
+
+        const modification = await client.put(path, modifiedFood)
+
+        expect(modification.code).toBe(400)
+
+        await client.delete(path)
     })
 
     //own tests
