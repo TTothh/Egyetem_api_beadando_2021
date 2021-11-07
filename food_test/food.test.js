@@ -112,12 +112,11 @@ describe('Food tests', () => {
         const created = await client.post(endpoint, origFood)
 
         const item = JSON.parse(created.body)
-        const path =
+        const path =endpoint + "/" + item.id
         const wrongid = "asd"
         const wrongpath = endpoint + "/" + wrongid
 
         const modification = await client.put(wrongpath, modifiedFood)
-        const modified = await client.get(wrongpath)
 
         expect(modification.code).toBe(404)
 
