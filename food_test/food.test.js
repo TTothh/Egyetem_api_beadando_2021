@@ -36,11 +36,11 @@ describe('Food tests', () => {
         const endpoint = "/api/food"
         const postbody = {"name" : "foodItemtoGet", "calories" : 50}
 
-        await client.post(endpoint, postbody)
+        const create = await client.post(endpoint, postbody)
 
         const response = await client.get(endpoint)
 
-        const item = JSON.parse(response.body)
+        const item = JSON.parse(create.body)
         const path = endpoint + "/" + item.id
 
         expect(response.code).toBe(200)
@@ -73,8 +73,7 @@ describe('Food tests', () => {
 
         //Jsonify responsebody to get id
         const item = JSON.parse(postresponsebody.body)
-        const wrongid = "asd"
-        const wrongpath = endpoint + "/" + wrongid
+        const wrongpath = endpoint + "/" + "asd"
 
         const response = await client.get(wrongpath)
         expect(response.code).toBe(404)
@@ -112,9 +111,8 @@ describe('Food tests', () => {
         const created = await client.post(endpoint, origFood)
 
         const item = JSON.parse(created.body)
-        const path =endpoint + "/" + item.id
-        const wrongid = "asd"
-        const wrongpath = endpoint + "/" + wrongid
+        const path = endpoint + "/" + item.id
+        const wrongpath = endpoint + "/" + "asd"
 
         const modification = await client.put(wrongpath, modifiedFood)
 
@@ -148,10 +146,9 @@ describe('Food tests', () => {
         const created = await client.post(endpoint, food)
 
         const item = JSON.parse(created.body)
-        const path = endpoint + "/" + item.id
 
-        const wrongid = 'asdd'
-        const wrongpath = endpoint + "/" + wrongid
+        const path = endpoint + "/" + item.id
+        const wrongpath = endpoint + "/" + "asd"
 
         const deletion = await client.delete(wrongpath)
 
@@ -168,10 +165,11 @@ describe('Food tests', () => {
         const created = await client.post(endpoint, origFood)
 
         const item = JSON.parse(created.body)
-        const wrongid = "asd"
-        const path = endpoint + "/" + wrongid
 
-        const modifiedFood = {"name": "hamburgerIsModified", "calories": 69, "id" : item.id}
+        const path = endpoint + "/" + item.id
+        const wrongpath = endpoint + "/" + "asd"
+
+        const modifiedFood = {"name": "hamburgerIsModified", "calories": 69, "id" : wrongpath}
 
         const modification = await client.put(path, modifiedFood)
 
