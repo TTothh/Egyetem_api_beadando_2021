@@ -13,7 +13,7 @@ describe('Food tests', () => {
         expect(1).toBe(1)
     })
 
-    it("api/food doesn't have name attribute", async () => {
+    it("1. api/food doesn't have name attribute", async () => {
         const endpoint = "/api/food"
         const postbody = {"calories" : "10"}
 
@@ -22,7 +22,7 @@ describe('Food tests', () => {
         expect(response.code).toBe(400)
     })
 
-    it("api/food negative calories", async () => {
+    it("2. api/food negative calories", async () => {
         const endpoint = "/api/food"
         const postbody = {"name" : "hamburger", "calories" : "-1200"}
 
@@ -31,18 +31,23 @@ describe('Food tests', () => {
         expect(response.code).toBe(400)
     })
 
-    it("api/food get contains everything", async () => {
-        //only returns 200 if there are items already so I create one. DOn't know if this is right but the test itself is logically correct
+    it("3. api/food get contains everything", async () => {
+        //only returns 200 if there are items already so I create one. Don't know if this is right but the test itself is logically correct
         const endpoint = "/api/food"
         const postbody = {"name" : "foodItemtoGet", "calories" : 50}
 
         await client.post(endpoint, postbody)
 
         const response = await client.get(endpoint)
+
+        const item = JSON.parse(response.body)
+        const path = endpoint + "/" + item.id
+
         expect(response.code).toBe(200)
+        await client.delete(path)
     })
 
-    it("get api/food/id returns 200", async () => {
+    it("4. get api/food/id returns 200", async () => {
         //create item
         const endpoint = "/api/food"
         const postbody = {"name" : "hamburgerToGetWith200", "calories" : 1100}
@@ -55,6 +60,45 @@ describe('Food tests', () => {
 
         const response = await client.get(path)
         expect(response.code).toBe(200)
+
+        await client.delete(path)
+    })
+
+    it("5. 404 code on wrong id", async () => {
+        //create item
+        const endpoint = "/api/food"
+        const postbody = {"name": "hamburgerToGetWith200", "calories": 1100}
+
+        const postresponsebody = await client.post(endpoint, postbody)
+
+        //Jsonify responsebody to get id
+        const item = JSON.parse(postresponsebody.body)
+        const wrongid = "asd"
+        const wrongpath = endpoint + "/" + wrongid
+
+        const response = await client.get(wrongpath)
+        expect(response.code).toBe(404)
+
+        const path = endpoint + "/" + item.id
+        await client.delete(path)
+    })
+
+    it("6. modifying item works", async () => {
+        //create an item
+        const endpoint = "/api/food"
+        const origFood = {"name": "hamburgerToBeModified", "calories": 1200}
+        const modifiedFood = {"name": "hamburgerIsModified", "calories": 69}
+
+        const created = await client.post(endpoint, origFood)
+
+        const item = JSON.parse(created.body)
+        const path = endpoint + "/" + item.id
+
+        const modification = await client.put(path, modifiedFood)
+        const modified = await client.get(path)
+
+        expect(modification.code).toBe(200)
+        expect(modified.code).toBe(200)
     })
 
     //own tests
@@ -78,7 +122,7 @@ describe('Food tests', () => {
 
         const response = await client.post(endpoint, postbody)
 
-        //apparently 201 is the response for succesfull creation
+        //apparently 201 is the response for successful creation
         expect(response.code).toBe(201)
 
         //delete it
